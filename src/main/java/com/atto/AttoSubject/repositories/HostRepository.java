@@ -11,4 +11,5 @@ public interface HostRepository extends JpaRepository<Host,Long> {
     Host findByIp(String ip);
     Host findByName(String name);
     List<Host> findAllByOrderByName();
+    boolean existsByIp(String ip);
 }
