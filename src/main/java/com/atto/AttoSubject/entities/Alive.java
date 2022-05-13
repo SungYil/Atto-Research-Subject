@@ -1,13 +1,12 @@
 package com.atto.AttoSubject.entities;
 
+import com.atto.AttoSubject.enums.AliveState;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.time.ZonedDateTime;
 
 @NoArgsConstructor
@@ -19,6 +18,7 @@ public class Alive extends BaseEntity{
     @OneToOne
     @JoinColumn(name = "ip")
     private Host host;
-    private Enum state;
+    @Enumerated(EnumType.STRING)
+    private AliveState state;
     private ZonedDateTime checkTime;
 }
