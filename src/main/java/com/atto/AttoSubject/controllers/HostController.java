@@ -5,10 +5,7 @@ import com.atto.AttoSubject.dtos.HostRegisterRequest;
 import com.atto.AttoSubject.dtos.HostRegisterResponse;
 import com.atto.AttoSubject.services.HostService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,5 +18,13 @@ public class HostController {
     @RequestMapping(method= RequestMethod.POST, path="/register")
     public HostRegisterResponse register(@RequestBody HostRegisterRequest request){
         return hostService.register(request);
+    }
+    @RequestMapping(method=RequestMethod.GET, path="/getHost")
+    public HostDto getHost(@RequestParam String ip){
+        return hostService.getHost(ip);
+    }
+    @RequestMapping(method=RequestMethod.GET, path="/getHosts")
+    public List<HostDto> getHosts(){
+        return hostService.getHosts();
     }
 }

@@ -11,12 +11,15 @@ import com.atto.AttoSubject.repositories.AliveRepository;
 import com.atto.AttoSubject.repositories.HostRepository;
 import com.atto.AttoSubject.util.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.net.InetAddress;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Service
 public class HostService {
@@ -61,10 +64,20 @@ public class HostService {
         System.out.println(hostMapper.map(host));
         return hostMapper.map(host);
     }
+
     @Transactional
     public HostDto getHost(String ip){
+        if(hostRepository.findByIp(ip)==null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"없는 IP 입니다.");
+        }
         return hostMapper.toDto(hostRepository.findByIp(ip));
     }
+
+    @Transactional
+    public List<HostDto> getHosts(){
+        return hostMapper.toDto(hostRepository.findAllByOrderByName());
+    }
+
     public boolean isReachable(String ip){
         boolean check=false;
         try{

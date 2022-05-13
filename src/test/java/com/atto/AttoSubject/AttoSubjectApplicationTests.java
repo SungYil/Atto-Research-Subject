@@ -1,6 +1,7 @@
 package com.atto.AttoSubject;
 
 import com.atto.AttoSubject.dtos.HostRegisterRequest;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +9,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -25,19 +29,45 @@ class AttoSubjectApplicationTests {
 	private ObjectMapper objectMapper;
 
 	@Test
-	void contextLoads() {
+	void contextLoads(){
+	}
+
+	@Test
+	void whenGetHosts_thenOk()throws Exception{
+		var result=requestGet("/host/getHosts");
+
+		result.andDo(print()).andExpect(status().isOk());
+	}
+
+	@Test
+	void whenGetHost_thenOk()throws Exception{
+		MultiValueMap<String, String> params=new LinkedMultiValueMap<>();
+		params.add("ip","142.250.138.101");
+		var result=requestGet(params,"/host/getHost");
+
+		result.andDo(print()).andExpect(status().isOk());
 	}
 
 	@Test
 	void whenRegister_thenOk()throws Exception{
-		var request=new HostRegisterRequest("142.250.138.101","google");
+		var result=requestPost(new HostRegisterRequest("142.250.138.101","google"),"/host/register");
 
-		var result=mockMvc.perform(
-				MockMvcRequestBuilders.post("/host/register")
+		result.andDo(print()).andExpect(status().isOk());
+	}
+	ResultActions requestGet(MultiValueMap<String, String> params, String path) throws Exception{
+		return mockMvc.perform(
+			MockMvcRequestBuilders.get(path).params(params)
+		);
+
+	}
+	ResultActions requestGet(String path)throws Exception{
+		return requestGet(new LinkedMultiValueMap<>(), path);
+	}
+	ResultActions requestPost(Object request,String path) throws Exception {
+		return mockMvc.perform(
+				MockMvcRequestBuilders.post(path)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsBytes(request))
 		);
-
-		result.andDo(print()).andExpect(status().isOk());
 	}
 }
