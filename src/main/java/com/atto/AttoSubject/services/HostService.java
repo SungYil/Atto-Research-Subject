@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.net.InetAddress;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,6 +33,32 @@ public class HostService {
 
     @Autowired
     private HostMapper hostMapper;
+
+    @Transactional
+    public HostAliveHistoryResponse getHostAliveHistoryById(long id){
+        if(!hostRepository.findById(id).isPresent()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"일치하는 id가 없습니다.");
+        }
+
+        Host host=hostRepository.findById(id).get();
+        Alive alive=aliveRepository.findByHostId(id);
+
+        return new HostAliveHistoryResponse(id,host.getIp(),host.getName(),alive.getState(),alive.getCheckTime());
+    }
+    @Transactional
+    public List<HostAliveHistoryResponse> getHostAliveHistory(){
+        List<HostAliveHistoryResponse> list=new ArrayList<>();
+        List<Host> hostList=hostRepository.findAllByOrderByName();
+
+        for(int i=0;i<hostList.size();++i){
+            Host host=hostList.get(i);
+            Alive alive=aliveRepository.findByHostId(host.getId());
+            list.add(new HostAliveHistoryResponse(host.getId(),host.getIp(),host.getName(),alive.getState(),alive.getCheckTime()));
+        }
+
+        return list;
+    }
+
 
     @Transactional
     public HostAliveHistoryResponse postHostAliveHistoryById(long id){

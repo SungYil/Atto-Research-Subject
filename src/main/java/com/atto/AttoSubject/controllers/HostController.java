@@ -40,5 +40,14 @@ public class HostController {
         return hostService.postHostAliveHistoryById(id);
     }
 
+    @RequestMapping(method=RequestMethod.GET,path="/{hostId}/host-alive-history")
+    public HostAliveHistoryResponse getHostAliveHistoryById(@PathVariable("hostId") long id){
+        return hostService.getHostAliveHistoryById(id);
+    }
+
+    @RequestMapping(method=RequestMethod.GET,path="/host-alive-history")
+    public List<HostAliveHistoryResponse> getHostAliveHistory(){
+        return hostService.getHostAliveHistory();
+    }
 
 }
