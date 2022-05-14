@@ -99,6 +99,8 @@ public class HostService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"이름이 중복됩니다.");
         }else if(hostRepository.findByIp(request.getIp())!=null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"ip가 중복됩니다.");
+        }else if(hostRepository.findAll().size()>=100){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"host의 개수가 100개 입니다.");
         }
 
         Host host=hostMapper.map(request);
