@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface AliveRepository extends JpaRepository<Alive,Long> {
-    @Query(value="select a from Alive a join fetch a.host")
+    @Query(value="select a from Alive a join a.host h where h.id=:id")
     Alive findByHostId(long id);
     List<Alive> findAll();
 }
