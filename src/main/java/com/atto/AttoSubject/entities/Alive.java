@@ -15,8 +15,8 @@ import java.time.ZonedDateTime;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 public class Alive extends BaseEntity{
-    @OneToOne
-    @JoinColumn(name = "ip")
+    @OneToOne(fetch= FetchType.LAZY)
+    @JoinColumn(name = "host_id")
     private Host host;
     @Enumerated(EnumType.STRING)
     private AliveState state;
