@@ -1,10 +1,8 @@
 package com.atto.AttoSubject;
 
-import com.atto.AttoSubject.dtos.HostAliveHistoryResponse;
-import com.atto.AttoSubject.dtos.HostRegisterRequest;
+import com.atto.AttoSubject.dtos.HostPostRequest;
 import com.atto.AttoSubject.dtos.HostUpdateRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hibernate.boot.spi.InFlightMetadataCollector;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -124,7 +122,7 @@ class AttoSubjectApplicationTests {
 
 	@Test
 	void whenGetHostById_thenOk()throws Exception{
-		var result=requestGet("/hosts/23");
+		var result=requestGet("/hosts/24");
 
 		result.andDo(print()).andExpect(status().isOk());
 	}
@@ -137,13 +135,25 @@ class AttoSubjectApplicationTests {
 
 	@Test
 	void whenPostHost_thenOk()throws Exception{
-		var result=requestPost(new HostRegisterRequest("142.250.138.101","google"),"/hosts");
+		var result=requestPost(new HostPostRequest("142.251.32.206","youtube"),"/hosts");
 
 		result.andDo(print()).andExpect(status().isOk());
 	}
 	@Test
-	void whenPostHost_thenError()throws Exception{
-		var result=requestPost(new HostRegisterRequest("142250138101","google"),"/hosts");
+	void whenPostHostWithIpTypeError_thenError()throws Exception{
+		var result=requestPost(new HostPostRequest("142250138101","google"),"/hosts");
+
+		result.andDo(print()).andExpect(status().isBadRequest());
+	}
+	@Test
+	void whenPostHostWithDuplicatedIp_thenError()throws Exception{
+		var result=requestPost(new HostPostRequest("142.250.138.101","google1"),"/hosts");
+
+		result.andDo(print()).andExpect(status().isBadRequest());
+	}
+	@Test
+	void whenPostHostWithDuplicatedName_thenError()throws Exception{
+		var result=requestPost(new HostPostRequest("142.250.131.101","google"),"/hosts");
 
 		result.andDo(print()).andExpect(status().isBadRequest());
 	}
