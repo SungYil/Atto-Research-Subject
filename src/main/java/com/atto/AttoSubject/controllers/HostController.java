@@ -30,9 +30,9 @@ public class HostController {
         return hostService.getHosts();
     }
 
-    @RequestMapping(method=RequestMethod.PUT,path="")
-    public HostDto updateHost(@RequestBody HostUpdateRequest request){
-        return hostService.updateHost(request);
+    @RequestMapping(method=RequestMethod.PUT,path="/{hostId}")
+    public HostDto updateHost(@PathVariable("hostId") long id,@RequestBody HostUpdateRequest request){
+        return hostService.updateHost(id,request);
     }
 
 }

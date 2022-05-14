@@ -78,11 +78,11 @@ public class HostService {
     }
 
     @Transactional
-    public HostDto updateHost(HostUpdateRequest request){
-        /*if(!validate.validateHostIp(request.getIp())){
+    public HostDto updateHost(long id,HostUpdateRequest request){
+        if(!validate.validateHostIp(request.getIp())){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"ip주소가 유효하지 않습니다");
-        }else if(!hostRepository.findById(request.getId()).isPresent()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"존재하지 않는 Host입니다");
+        }else if(!hostRepository.findById(id).isPresent()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"존재하지 않는 Host입니다");
         }else if(hostRepository.findByIp(request.getIp())!=null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"이미 존재하는 IP 주소입니다");
         }else if(hostRepository.findByName(request.getName())!=null){
@@ -90,11 +90,11 @@ public class HostService {
         }
 
         Host host=hostMapper.toHost(request);
-        //host.setCreatedAt(hostRepository.findById(request.getId()).get().getCreatedAt());
+        host.setId(id);
+        host.setCreatedAt(hostRepository.findById(id).get().getCreatedAt());
         host.setUpdatedAt(ZonedDateTime.now(ZoneId.of("Asia/Seoul")));
 
-        Alive alive=aliveRepository.findByHost(request.getId()+"");
-        System.out.println("+++++++++++++++++++++++++++++++++++++"+alive);
+        Alive alive=aliveRepository.findByHostId(id);
         alive.setHost(host);
         if(isReachable(request.getIp())){
             alive.setState(AliveState.alive);
@@ -105,8 +105,7 @@ public class HostService {
 
         hostRepository.save(host);
         aliveRepository.save(alive);
-        return hostMapper.toDto(host);*/
-        return null;
+        return hostMapper.toDto(host);
     }
 
     public boolean isReachable(String ip){
