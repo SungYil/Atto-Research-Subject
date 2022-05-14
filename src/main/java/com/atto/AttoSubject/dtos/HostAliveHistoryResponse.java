@@ -4,15 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.ZonedDateTime;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class HostDto {
-    private String id;
+public class HostAliveHistoryResponse {
+    private long hostId;
     private String ip;
     private String name;
-    private ZonedDateTime createdAt;
-    private ZonedDateTime updatedAt;
+    private String state;
+    private String checkTime;
 }
