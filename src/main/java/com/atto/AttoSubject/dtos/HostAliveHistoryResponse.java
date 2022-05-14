@@ -1,8 +1,11 @@
 package com.atto.AttoSubject.dtos;
 
+import com.atto.AttoSubject.enums.AliveState;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.ZonedDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -11,6 +14,6 @@ public class HostAliveHistoryResponse {
     private long hostId;
     private String ip;
     private String name;
-    private String state;
-    private String checkTime;
+    private AliveState state;
+    private ZonedDateTime checkTime;
 }
