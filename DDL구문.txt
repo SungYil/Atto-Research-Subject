@@ -1,0 +1,17 @@
+CREATE TABLE `host` (
+  `id` bigint(20) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `ip` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `updated_at` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
+
+CREATE TABLE `alive` (
+  `id` bigint(20) NOT NULL,
+  `check_time` datetime NOT NULL,
+  `state` varchar(255) NOT NULL,
+  `host_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`host_id`) REFERENCES `host` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 ;
