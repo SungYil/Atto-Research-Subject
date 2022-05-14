@@ -33,7 +33,7 @@ class AttoSubjectApplicationTests {
 
 	@Test
 	void whenPostHostAliveHistoryById_thenOk()throws Exception{
-		var result=requestPost(null,"/hosts/23/host-alive-history");
+		var result=requestPost(null,"/hosts/43/host-alive-history");
 
 		result.andDo(print()).andExpect(status().isOk());
 	}
@@ -53,7 +53,7 @@ class AttoSubjectApplicationTests {
 
 	@Test
 	void whenGetHostByIdAliveHistory_thenOk()throws Exception{
-		var result=requestGet("/hosts/23/host-alive-history");
+		var result=requestGet("/hosts/43/host-alive-history");
 
 		result.andDo(print()).andExpect(status().isOk());
 	}
@@ -66,7 +66,7 @@ class AttoSubjectApplicationTests {
 
 	@Test
 	void whenDeleteHostById_thenOk()throws Exception{
-		var result =requestDelete("/hosts/23");
+		var result =requestDelete("/hosts/39");
 
 		result.andDo(print()).andExpect(status().isOk());
 	}
@@ -81,28 +81,28 @@ class AttoSubjectApplicationTests {
 
 	@Test
 	void whenUpdateHostById_thenOk()throws Exception{
-		var result=requestPut(new HostUpdateRequest("140.82.113.3","github"),"/hosts/22");
+		var result=requestPut(new HostUpdateRequest("142.250.138.101","google"),"/hosts/43");
 
 		result.andDo(print()).andExpect(status().isOk());
 	}
 
 	@Test
 	void whenUpdateHostByIdWithDuplicateName_thenError()throws Exception{
-		var result=requestPut(new HostUpdateRequest("140.82.113.3","github"),"/hosts/22");
+		var result=requestPut(new HostUpdateRequest("140.82.113.3","google"),"/hosts/39");
 
 		result.andDo(print()).andExpect(status().isBadRequest());
 	}
 
 	@Test
 	void whenUpdateHostByIdWithDuplicateIp_thenError()throws Exception{
-		var result=requestPut(new HostUpdateRequest("140.82.113.3","github"),"/hosts/22");
+		var result=requestPut(new HostUpdateRequest("142.250.138.101","github"),"/hosts/39");
 
 		result.andDo(print()).andExpect(status().isBadRequest());
 	}
 
 	@Test
 	void whenUpdateHostByIdWithWrongRequestForm_thenError()throws Exception{
-		var result=requestPut(new HostUpdateRequest("140","github"),"/hosts/22");
+		var result=requestPut(new HostUpdateRequest("140","github"),"/hosts/39");
 
 		result.andDo(print()).andExpect(status().isBadRequest());
 	}
@@ -135,9 +135,15 @@ class AttoSubjectApplicationTests {
 
 	@Test
 	void whenPostHost_thenOk()throws Exception{
-		var result=requestPost(new HostPostRequest("142.251.32.206","youtube"),"/hosts");
+		var result=requestPost(new HostPostRequest("143.251.33.141","youtube13"),"/hosts");
 
 		result.andDo(print()).andExpect(status().isOk());
+	}
+	@Test
+	void whenPostHostWithMaxCount_thenError()throws Exception{
+		var result=requestPost(new HostPostRequest("143.251.33.33","google233"),"/hosts");
+
+		result.andDo(print()).andExpect(status().isBadRequest());
 	}
 	@Test
 	void whenPostHostWithIpTypeError_thenError()throws Exception{
