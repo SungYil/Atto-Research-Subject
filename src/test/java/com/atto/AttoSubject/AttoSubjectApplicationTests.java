@@ -1,8 +1,10 @@
 package com.atto.AttoSubject;
 
+import com.atto.AttoSubject.dtos.HostAliveHistoryResponse;
 import com.atto.AttoSubject.dtos.HostRegisterRequest;
 import com.atto.AttoSubject.dtos.HostUpdateRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hibernate.boot.spi.InFlightMetadataCollector;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -32,68 +34,121 @@ class AttoSubjectApplicationTests {
 	}
 
 	@Test
-	void whenUpdateHost_thenOk()throws Exception{
-		var result=requestPut(new HostUpdateRequest("140.82.113.3","github"),"/host/22");
+	void whenPostHostAliveHistoryById_thenOk()throws Exception{
+		var result=requestPost(null,"/hosts/23/host-alive-history");
+
+		result.andDo(print()).andExpect(status().isOk());
+	}
+	@Test
+	void whenPostHostAliveHistoryByIdWithNotFoundId_thenError()throws Exception{
+		var result=requestPost(null,"/hosts/21243/host-alive-history");
+
+		result.andDo(print()).andExpect(status().isNotFound());
+	}
+
+	@Test
+	void whenGetHostAliveHistory_thenOk()throws Exception{
+		var result=requestGet("/hosts/host-alive-history");
 
 		result.andDo(print()).andExpect(status().isOk());
 	}
 
 	@Test
-	void whenUpdateHostWithDuplicateName_thenError()throws Exception{
-		var result=requestPut(new HostUpdateRequest("140.82.113.3","github"),"/host/22");
-
-		result.andDo(print()).andExpect(status().isBadRequest());
-	}
-
-	@Test
-	void whenUpdateHostWithDuplicateIp_thenError()throws Exception{
-		var result=requestPut(new HostUpdateRequest("140.82.113.3","github"),"/host/22");
-
-		result.andDo(print()).andExpect(status().isBadRequest());
-	}
-
-	@Test
-	void whenUpdateHostWithWrongRequestForm_thenError()throws Exception{
-		var result=requestPut(new HostUpdateRequest("140","github"),"/host/22");
-
-		result.andDo(print()).andExpect(status().isBadRequest());
-	}
-	@Test
-	void whenUpdateHostWithNotFoundHost_thenError()throws Exception{
-		var result=requestPut(new HostUpdateRequest("140.10.10.10","github"),"/host/132");
-
-		result.andDo(print()).andExpect(status().isBadRequest());
-	}
-
-	@Test
-	void whenUpdate_thenOK()throws Exception{
-		/*var result = requestPost(new HostUpdateRequest("140.82.113.3",""),"/host/{name}");
-
-		result.andDo(print()).andExpect(status().isOk());*/
-	}
-
-	@Test
-	void whenGetHosts_thenOk()throws Exception{
-		var result=requestGet("/host/getHosts");
+	void whenGetHostByIdAliveHistory_thenOk()throws Exception{
+		var result=requestGet("/hosts/23/host-alive-history");
 
 		result.andDo(print()).andExpect(status().isOk());
+	}
+	@Test
+	void whenGetHostByIdAliveHistoryWithNotFoundId_thenError()throws Exception{
+		var result=requestGet("/hosts/23123/host-alive-history");
+
+		result.andDo(print()).andExpect(status().isNotFound());
+	}
+
+	@Test
+	void whenDeleteHostById_thenOk()throws Exception{
+		var result =requestDelete("/hosts/23");
+
+		result.andDo(print()).andExpect(status().isOk());
+	}
+
+	@Test
+	void whenDeleteHostByIdWithNotFoundId_thenError()throws Exception{
+		var result=requestDelete("/hosts/23132");
+
+		result.andDo(print()).andExpect(status().isNotFound());
+	}
+
+
+	@Test
+	void whenUpdateHostById_thenOk()throws Exception{
+		var result=requestPut(new HostUpdateRequest("140.82.113.3","github"),"/hosts/22");
+
+		result.andDo(print()).andExpect(status().isOk());
+	}
+
+	@Test
+	void whenUpdateHostByIdWithDuplicateName_thenError()throws Exception{
+		var result=requestPut(new HostUpdateRequest("140.82.113.3","github"),"/hosts/22");
+
+		result.andDo(print()).andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void whenUpdateHostByIdWithDuplicateIp_thenError()throws Exception{
+		var result=requestPut(new HostUpdateRequest("140.82.113.3","github"),"/hosts/22");
+
+		result.andDo(print()).andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void whenUpdateHostByIdWithWrongRequestForm_thenError()throws Exception{
+		var result=requestPut(new HostUpdateRequest("140","github"),"/hosts/22");
+
+		result.andDo(print()).andExpect(status().isBadRequest());
+	}
+	@Test
+	void whenUpdateHostByIdWithNotFoundHost_thenError()throws Exception{
+		var result=requestPut(new HostUpdateRequest("140.10.10.10","github"),"/hosts/132");
+
+		result.andDo(print()).andExpect(status().isNotFound());
 	}
 
 	@Test
 	void whenGetHost_thenOk()throws Exception{
-		MultiValueMap<String, String> params=new LinkedMultiValueMap<>();
-		params.add("ip","142.250.138.101");
-		var result=requestGet(params,"/host/getHost");
+		var result=requestGet("/hosts");
 
 		result.andDo(print()).andExpect(status().isOk());
 	}
 
 	@Test
-	void whenRegister_thenOk()throws Exception{
-		var result=requestPost(new HostRegisterRequest("142.250.138.101","google"),"/host/register");
+	void whenGetHostById_thenOk()throws Exception{
+		var result=requestGet("/hosts/23");
 
 		result.andDo(print()).andExpect(status().isOk());
 	}
+	@Test
+	void whenGetHostByIdWithNotFoundId_thenError()throws Exception{
+		var result=requestGet("/hosts/1002");
+
+		result.andDo(print()).andExpect(status().isNotFound());
+	}
+
+	@Test
+	void whenPostHost_thenOk()throws Exception{
+		var result=requestPost(new HostRegisterRequest("142.250.138.101","google"),"/hosts");
+
+		result.andDo(print()).andExpect(status().isOk());
+	}
+	@Test
+	void whenPostHost_thenError()throws Exception{
+		var result=requestPost(new HostRegisterRequest("142250138101","google"),"/hosts");
+
+		result.andDo(print()).andExpect(status().isBadRequest());
+	}
+
+
 	ResultActions requestGet(MultiValueMap<String, String> params, String path) throws Exception{
 		return mockMvc.perform(
 			MockMvcRequestBuilders.get(path).params(params)
@@ -115,6 +170,11 @@ class AttoSubjectApplicationTests {
 				MockMvcRequestBuilders.put(path)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsBytes(request))
+		);
+	}
+	ResultActions requestDelete(String path)throws Exception{
+		return mockMvc.perform(
+				MockMvcRequestBuilders.delete(path)
 		);
 	}
 }
