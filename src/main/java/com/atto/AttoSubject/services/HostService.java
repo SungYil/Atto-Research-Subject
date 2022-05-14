@@ -1,8 +1,9 @@
 package com.atto.AttoSubject.services;
 
 import com.atto.AttoSubject.dtos.HostDto;
-import com.atto.AttoSubject.dtos.HostRegisterRequest;
+import com.atto.AttoSubject.dtos.HostPostRequest;
 import com.atto.AttoSubject.dtos.HostRegisterResponse;
+import com.atto.AttoSubject.dtos.HostUpdateRequest;
 import com.atto.AttoSubject.entities.Alive;
 import com.atto.AttoSubject.entities.Host;
 import com.atto.AttoSubject.enums.AliveState;
@@ -36,14 +37,13 @@ public class HostService {
     private HostMapper hostMapper;
 
     @Transactional
-    public HostRegisterResponse register(HostRegisterRequest request){
-
+    public HostDto postHost(HostPostRequest request){
         if(!validate.validateHostIp(request.getIp())){
-            System.out.println("====================ip 입력이 잘못되었습니다.");
-            return null;
-        }else if(hostRepository.existsByIp(request.getIp())){
-            System.out.println("====================이미 존재하는 호스트입니다");
-            return null;
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"ip 입력이 잘못되었습니다.");
+        }else if(hostRepository.findByName(request.getName())!=null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"이름이 중복됩니다.");
+        }else if(hostRepository.findByIp(request.getIp())!=null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"ip가 중복됩니다.");
         }
 
         Host host=hostMapper.map(request);
@@ -61,21 +61,52 @@ public class HostService {
 
         hostRepository.save(host);
         aliveRepository.save(alive);
-        System.out.println(hostMapper.map(host));
-        return hostMapper.map(host);
+        return hostMapper.toDto(host);
     }
 
     @Transactional
-    public HostDto getHost(String ip){
-        if(hostRepository.findByIp(ip)==null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"없는 IP 입니다.");
+    public HostDto getHost(long id){
+        if(!hostRepository.findById(id).isPresent()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"일치하는 id가 없습니다.");
         }
-        return hostMapper.toDto(hostRepository.findByIp(ip));
+        return hostMapper.toDto(hostRepository.findById(id).get());
     }
 
     @Transactional
     public List<HostDto> getHosts(){
         return hostMapper.toDto(hostRepository.findAllByOrderByName());
+    }
+
+    @Transactional
+    public HostDto updateHost(HostUpdateRequest request){
+        /*if(!validate.validateHostIp(request.getIp())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"ip주소가 유효하지 않습니다");
+        }else if(!hostRepository.findById(request.getId()).isPresent()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"존재하지 않는 Host입니다");
+        }else if(hostRepository.findByIp(request.getIp())!=null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"이미 존재하는 IP 주소입니다");
+        }else if(hostRepository.findByName(request.getName())!=null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"이미 존재하는 Host 이름 입니다");
+        }
+
+        Host host=hostMapper.toHost(request);
+        //host.setCreatedAt(hostRepository.findById(request.getId()).get().getCreatedAt());
+        host.setUpdatedAt(ZonedDateTime.now(ZoneId.of("Asia/Seoul")));
+
+        Alive alive=aliveRepository.findByHost(request.getId()+"");
+        System.out.println("+++++++++++++++++++++++++++++++++++++"+alive);
+        alive.setHost(host);
+        if(isReachable(request.getIp())){
+            alive.setState(AliveState.alive);
+        }else{
+            alive.setState(AliveState.notAlive);
+        }
+        alive.setCheckTime(ZonedDateTime.now(ZoneId.of("Asia/Seoul")));
+
+        hostRepository.save(host);
+        aliveRepository.save(alive);
+        return hostMapper.toDto(host);*/
+        return null;
     }
 
     public boolean isReachable(String ip){

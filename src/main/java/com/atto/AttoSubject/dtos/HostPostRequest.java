@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class HostRegisterRequest {
+public class HostPostRequest {
     private String ip;
     private String name;
 }
