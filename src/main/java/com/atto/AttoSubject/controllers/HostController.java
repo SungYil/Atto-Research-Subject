@@ -29,10 +29,13 @@ public class HostController {
     public List<HostDto> getHosts(){
         return hostService.getHosts();
     }
-
     @RequestMapping(method=RequestMethod.PUT,path="/{hostId}")
     public HostDto updateHost(@PathVariable("hostId") long id,@RequestBody HostUpdateRequest request){
         return hostService.updateHost(id,request);
+    }
+    @RequestMapping(method=RequestMethod.DELETE,path="/{hostId}")
+    public void deleteHost(@PathVariable("hostId") long id){
+        hostService.deleteHost(id);
     }
 
 }

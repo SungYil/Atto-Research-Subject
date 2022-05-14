@@ -37,6 +37,16 @@ public class HostService {
     private HostMapper hostMapper;
 
     @Transactional
+    public void deleteHost(long id){
+        if(!hostRepository.findById(id).isPresent()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"일치하는 id가 없습니다.");
+        }
+
+        Alive alive=aliveRepository.findByHostId(id);
+        aliveRepository.deleteById(alive.getId());
+        hostRepository.deleteById(id);
+    }
+    @Transactional
     public HostDto postHost(HostPostRequest request){
         if(!validate.validateHostIp(request.getIp())){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"ip 입력이 잘못되었습니다.");
