@@ -1,7 +1,7 @@
 package com.atto.AttoSubject;
 
 import com.atto.AttoSubject.dtos.HostRegisterRequest;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.atto.AttoSubject.dtos.HostUpdateRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -30,6 +29,47 @@ class AttoSubjectApplicationTests {
 
 	@Test
 	void contextLoads(){
+	}
+
+	@Test
+	void whenUpdateHost_thenOk()throws Exception{
+		var result=requestPut(new HostUpdateRequest("140.82.113.3","github"),"/host/22");
+
+		result.andDo(print()).andExpect(status().isOk());
+	}
+
+	@Test
+	void whenUpdateHostWithDuplicateName_thenError()throws Exception{
+		var result=requestPut(new HostUpdateRequest("140.82.113.3","github"),"/host/22");
+
+		result.andDo(print()).andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void whenUpdateHostWithDuplicateIp_thenError()throws Exception{
+		var result=requestPut(new HostUpdateRequest("140.82.113.3","github"),"/host/22");
+
+		result.andDo(print()).andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void whenUpdateHostWithWrongRequestForm_thenError()throws Exception{
+		var result=requestPut(new HostUpdateRequest("140","github"),"/host/22");
+
+		result.andDo(print()).andExpect(status().isBadRequest());
+	}
+	@Test
+	void whenUpdateHostWithNotFoundHost_thenError()throws Exception{
+		var result=requestPut(new HostUpdateRequest("140.10.10.10","github"),"/host/132");
+
+		result.andDo(print()).andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void whenUpdate_thenOK()throws Exception{
+		/*var result = requestPost(new HostUpdateRequest("140.82.113.3",""),"/host/{name}");
+
+		result.andDo(print()).andExpect(status().isOk());*/
 	}
 
 	@Test
@@ -66,6 +106,13 @@ class AttoSubjectApplicationTests {
 	ResultActions requestPost(Object request,String path) throws Exception {
 		return mockMvc.perform(
 				MockMvcRequestBuilders.post(path)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsBytes(request))
+		);
+	}
+	ResultActions requestPut(Object request,String path)throws Exception{
+		return mockMvc.perform(
+				MockMvcRequestBuilders.put(path)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsBytes(request))
 		);
