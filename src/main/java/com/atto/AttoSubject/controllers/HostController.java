@@ -1,9 +1,6 @@
 package com.atto.AttoSubject.controllers;
 
-import com.atto.AttoSubject.dtos.HostDto;
-import com.atto.AttoSubject.dtos.HostPostRequest;
-import com.atto.AttoSubject.dtos.HostRegisterResponse;
-import com.atto.AttoSubject.dtos.HostUpdateRequest;
+import com.atto.AttoSubject.dtos.*;
 import com.atto.AttoSubject.services.HostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -37,5 +34,11 @@ public class HostController {
     public void deleteHost(@PathVariable("hostId") long id){
         hostService.deleteHost(id);
     }
+
+    @RequestMapping(method=RequestMethod.POST,path="/{hostId}/host-alive-history")
+    public HostAliveHistoryResponse postHostAliveHistoryById(@PathVariable("hostId") long id){
+        return hostService.postHostAliveHistoryById(id);
+    }
+
 
 }

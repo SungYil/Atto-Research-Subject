@@ -1,9 +1,6 @@
 package com.atto.AttoSubject.services;
 
-import com.atto.AttoSubject.dtos.HostDto;
-import com.atto.AttoSubject.dtos.HostPostRequest;
-import com.atto.AttoSubject.dtos.HostRegisterResponse;
-import com.atto.AttoSubject.dtos.HostUpdateRequest;
+import com.atto.AttoSubject.dtos.*;
 import com.atto.AttoSubject.entities.Alive;
 import com.atto.AttoSubject.entities.Host;
 import com.atto.AttoSubject.enums.AliveState;
@@ -35,6 +32,27 @@ public class HostService {
 
     @Autowired
     private HostMapper hostMapper;
+
+    @Transactional
+    public HostAliveHistoryResponse postHostAliveHistoryById(long id){
+        if(!hostRepository.findById(id).isPresent()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"일치하는 id가 없습니다.");
+        }
+
+        Host host=hostRepository.findById(id).get();
+        Alive alive=aliveRepository.findByHostId(id);
+
+        if(isReachable(host.getIp())){
+            alive.setState(AliveState.alive);
+        }else{
+            alive.setState(AliveState.notAlive);
+        }
+        alive.setCheckTime(ZonedDateTime.now(ZoneId.of("Asia/Seoul")));
+
+        aliveRepository.save(alive);
+
+        return new HostAliveHistoryResponse(id,host.getIp(),host.getName(),alive.getState(),alive.getCheckTime());
+    }
 
     @Transactional
     public void deleteHost(long id){
